@@ -1,0 +1,48 @@
+{
+  "$schema": "https://tauri.app/schemas/tauri-config.json",
+  "package": {
+    "productName": "淬 Quench",
+    "version": "0.1.0"
+  },
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "devPath": "http://localhost:5173",
+    "distDir": "../dist"
+  },
+  "tauri": {
+    "bundle": {
+      "identifier": "com.zipx.app",
+      "resources": ["tools/7za.exe"]
+    },
+    "windows": [
+      {
+        "title": "淬 Quench",
+        "width": 1200,
+        "height": 800,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": null
+    },
+    "allowlist": {
+      "all": false,
+      "dialog": {
+        "all": true
+      },
+      "fs": {
+        "all": true
+      },
+      "path": {
+        "all": true
+      },
+      "protocol": {
+        "all": true
+      },
+      "shell": {
+        "open": true
+      }
+    }
+  }
+}

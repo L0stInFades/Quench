@@ -1,0 +1,13 @@
+/target/
+**/target/
+/release_assets/
+/ui/node_modules/
+/ui/dist/
+/ui/src-tauri/target/
+/.claude/
+/test_output/
+*.log
+tmpclaude-*
+*.tar.zst
+Thumbs.db
+.DS_Store
