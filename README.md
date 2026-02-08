@@ -1,140 +1,91 @@
-# ZipX
+# 淬 Quench
 
-High-throughput, resilient compression and extraction tool targeting 300MB/s single-core and 800MB/s 4-core for tar.* and zip, with pluggable codecs (zstd, lz4, brotli) and a Tauri + Svelte UI shell. Core is Rust for safety and streaming I/O.
+*A suite of soulful reflections on the nature of data — prioritizing harmony over noise, clarity over complexity.*
 
-## Features
-- **Multi-format support**: tar.zst, tar.lz4, tar.br, zip, and more
-- **Compression & Extraction**: Full support for both creating and extracting archives
-- **Multiple codecs**: Zstandard (zstd), LZ4, and Brotli compression
-- **Automatic format detection**: Detects archive type from magic bytes and file extensions
-- **Batch processing**: Process multiple archives in one command
-- **Integrity checking**: CRC32 and HMAC verification
-- **Resilient extraction**: Skip bad blocks, retry attempts, error recovery
-- **High performance**: Parallel processing with configurable concurrency
-- **Cross-platform UI**: Modern Tauri + Svelte interface with auto-detection
-- **CLI**: Full-featured command-line interface for automation
+In the quiet spaces between files, there is a rhythm that exists without demanding attention. **淬** does not rush. It breathes through your archives with the patience of a 14th-century monastery at dawn — where compression becomes meditation, and extraction, a gentle unfolding.
 
-## Workspace
-- `core`: core library (codecs, containers, resilience, scheduler, extractor/compressor orchestrator, format detection)
-- `cli`: CLI wrapper around the core
-- `ui`: Tauri shell with Svelte front-end (`src-tauri` Rust backend)
-- Root `Cargo.toml`: workspace deps aligned across crates
+## What It Is
 
-## Architecture
-- **Codec layer**: traits + built-ins for zstd/lz4/brotli compression and decompression; CRC/HMAC verification hooks.
-- **Container layer**: tar.* streams through codec + integrity guard to avoid whole-archive buffering; zip spools to a temp file for bounded memory and supports warning/skip on per-entry failures.
-- **Format Detection**: Automatic detection from magic bytes (ZIP, 7z, RAR, zstd, LZ4, Brotli, Gzip, tar) and file extensions.
-- **Resilience**: `IntegrityPolicy` for crc32/hmac, retry attempts, and skip-bad-block toggles, backed by guarded readers.
-- **Scheduler**: rayon thread pool for chunk/entry parallelism; Tokio for async I/O; tracing for metrics plumbing.
-- **Pipeline**: `Extractor` registry picks container by format (`tar.zst`, `tar.lz4`, `tar.br`, `zip`).
-- **Batch Processing**: Process multiple archives or compress multiple sources in parallel.
+A tool for those who seek stillness in their workflows. For when you need your data to travel light, but your mind to remain unburdened.
 
-## CLI
+**Harmony through form:** tar.zst, tar.lz4, tar.br, tar.gz, zip, and the pure simplicity of tar.  
+**Breath in the process:** Stream without buffering the world.  
+**Gentle resilience:** When archives falter, we skip the broken notes and continue the melody.
 
-### Extract archives
+## The Essence
+
+Three codecs, one intention:
+- **zstd** — The balanced breath (levels 1-20)
+- **lz4** — Swift as intuition  
+- **brotli** — Deep compression, like memory folding into itself
+
+No need to name what you hold. We recognize archives by their first whisper — magic bytes speaking before extensions declare themselves.
+
+## The Practice
+
+### To Unfold
 ```bash
-# Extract with auto-detection (recommended)
+# Let the format reveal itself
 cargo run -p zipx-cli -- extract --input path/to/archive.tar.zst --output ./out
 
-# Extract with specific format
+# Or guide it gently
 cargo run -p zipx-cli -- extract --input path/to/archive.zip --output ./out --format zip
-
-# Force auto-detection with --auto flag
-cargo run -p zipx-cli -- extract --input path/to/archive.unknown --output ./out --auto
 ```
 
-### Compress files/directories
+### To Gather
 ```bash
-# Compress a directory with zstd (default level 3)
+# The quiet compression — zstd, level 3
 cargo run -p zipx-cli -- compress --input ./mydir --output ./archive.tar.zst
 
-# Maximum compression
+# Deep folding — level 20
 cargo run -p zipx-cli -- compress --input ./mydir --output ./archive.tar.zst --level 20
 
-# Fast compression with LZ4
+# Swift breath — LZ4
 cargo run -p zipx-cli -- compress --input ./mydir --output ./archive.tar.lz4 --format tar.lz4
-
-# Compress with filters (include/exclude patterns)
-cargo run -p zipx-cli -- compress --input ./mydir --output ./archive.tar.zst --include "*.txt,*.md" --exclude "*.log"
 ```
 
-### Batch operations
+### Many as One
 ```bash
-# Batch extract multiple archives (auto-detected formats)
+# Unfold many archives
 cargo run -p zipx-cli -- batch-extract --inputs archive1.tar.zst archive2.zip archive3.tar.lz4 --output-dir ./extracted
 
-# Batch compress multiple directories
+# Gather many sources
 cargo run -p zipx-cli -- batch-compress --inputs dir1 dir2 dir3 --output-dir ./compressed --format tar.zst
 ```
 
-## UI (Tauri + Svelte)
-- Install Node deps, then `npm run tauri:dev` (dev server) or `npm run tauri:build` (bundle).
-- Front-end provides both compression and extraction interfaces with:
-  - Mode selection (Extract/Compress)
-  - **Auto-detection format option** - automatically detects archive type
-  - Real-time format detection display
-  - Format selection (auto, tar.zst, tar.lz4, tar.br, zip)
-  - Compression level control (1-20)
-  - Real-time progress and throughput display
-  - Warning and error reporting
+## The Space Within (UI)
 
-## Building
+A Tauri + Svelte shell — not a command center, but a window. Dark as contemplation, simple as breath.
+
 ```bash
-# Build all packages
-cargo build --release
-
-# Build specific packages
-cargo build --release -p zipx-core
-cargo build --release -p zipx-cli
-
-# Build UI (from ui directory)
 cd ui
 npm install
-npm run tauri build
+npm run tauri:dev    # for the journey
+cd ui && npm run tauri build  # for the artifact
 ```
 
-## Usage Examples
+## Building
 
-### CLI Examples
 ```bash
-# Auto-detection extraction (recommended)
-./target/release/zipx-cli extract -i backup.tar.zst -o ./restored
+# The complete form
+cargo build --release
 
-# Maximum compression
-./target/release/zipx-cli compress -i mydata -o backup.tar.zst --level 20
+# The core, alone
+cargo build --release -p zipx-core
 
-# Fast compression with LZ4
-./target/release/zipx-cli compress -i mydata -o backup.tar.lz4 --format tar.lz4
-
-# Batch process archives
-./target/release/zipx-cli batch-extract -i *.tar.zst --output-dir ./extracted
-
-# Parallel extraction (4 threads)
-./target/release/zipx-cli extract -i bigfile.tar.zst -o ./out --concurrency 4
+# The command line voice
+cargo build --release -p zipx-cli
 ```
 
-## Format Detection
+## Architecture (The Bones)
 
-ZipX automatically detects archive formats using:
-- **Magic bytes**: Reads the first few bytes to identify format
-- **File extensions**: Falls back to extension detection
+- **core** — Where codecs breathe and containers hold
+- **cli** — Words for the terminal  
+- **ui** — A visual quietude (`src-tauri` behind, Svelte before)
 
-Supported formats:
-- **Compressed**: tar.zst, tar.lz4, tar.br, tar.gz, tgz
-- **Containers**: tar, zip
-- **Detected**: 7z, rar (for future expansion)
+Root `Cargo.toml` binds them in shared purpose.
 
-## Performance Tips
-- Use **LZ4** for fastest compression/decompression
-- Use **zstd** for best compression ratio with good speed
-- Use **Brotli** for maximum compression (slower)
-- Increase **concurrency** for multi-core systems
-- Use **batch operations** for multiple files
+---
 
-## Next steps
-- Add chunked/parallel decode for zip (per-entry concurrency, optional mmap/temp reuse) and per-block checksum/hmac propagation.
-- Wire password handling + prompt flow; extend retries to codec/container layer with redundant-block fallbacks.
-- Extend container coverage (7z, rar) and codecs (lzma2, ppmd, zstd dict/par, zstd dicts/par).
-- Add progress reporting callbacks for real-time UI updates
-- Perf harness (throughput + CPU/memory) and fault-injection tests for corruption/password/CRC errors.
-- Surface tracing/telemetry to UI (progress, throughput, CPU/mem snapshots) and expose policy toggles (skip/retry/hmac).
+*For when you need your data to travel light, but your mind to remain unburdened.*  
+*淬 — the moment between heat and cool, where form becomes essential.*
